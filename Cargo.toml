@@ -1,0 +1,15 @@
+[package]
+name = "moxfield-cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "moxfield-cli"
+path = "bin/moxfield-cli.rs"
+
+[[bin]]
+name = "refresh-data"
+path = "bin/refresh-data.rs"
+
+[dependencies]
+dotenv = "0.15.0"
