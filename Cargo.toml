@@ -12,4 +12,10 @@ name = "refresh-data"
 path = "bin/refresh-data.rs"
 
 [dependencies]
+chrono = { version = "0.4.44", features = ["serde"] }
 dotenv = "0.15.0"
+enumflags2 = { version = "0.7.12", features = ["serde"] } 
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = { version = "1.0.149", features = ["preserve_order"] }
+url = { version = "2.5.8", features = ["serde"] }
+uuid = { version = "1.23.0", features = ["serde"] }
