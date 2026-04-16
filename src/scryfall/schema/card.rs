@@ -4,12 +4,8 @@ use enumflags2::BitFlags;
 use serde::{Deserialize, Deserializer};
 use url::Url;
 use uuid::Uuid;
-use colors::{
-    deserialize_with_color_array_to_set,
-    deserialize_optional_color_array_to_set
-};
 use crate::scryfall::schema::card::card_face::CardFace;
-use crate::scryfall::schema::card::colors::Color;
+use crate::scryfall::schema::card::colors::{Color, Colors};
 use crate::scryfall::schema::card::finishes::Finish;
 use crate::scryfall::schema::card::languages::Language;
 use crate::scryfall::schema::card::layout::Layout;
@@ -52,12 +48,9 @@ pub struct ScryfallCard<'a> {
     #[serde(borrow)]
     pub card_faces: Option<Vec<CardFace<'a>>>,
     pub cmc: f32,
-    #[serde(deserialize_with = "deserialize_with_color_array_to_set")]
-    pub color_identity: BitFlags<Color>,
-    #[serde(deserialize_with = "deserialize_optional_color_array_to_set")]
-    pub color_indicator: Option<BitFlags<Color>>,
-    #[serde(deserialize_with = "deserialize_optional_color_array_to_set")]
-    pub colors: Option<BitFlags<Color>>,
+    pub color_identity: Colors,
+    pub color_indicator: Option<Colors>,
+    pub colors: Option<Colors>,
     #[serde(borrow)]
     pub defense: Option<Cow<'a, str>>,
     pub edhrec_rank: Option<u64>,
@@ -81,8 +74,7 @@ pub struct ScryfallCard<'a> {
     pub penny_rank: Option<u64>,
     #[serde(borrow)]
     pub power: Option<Cow<'a, str>>,
-    #[serde(deserialize_with = "deserialize_optional_color_array_to_set")]
-    pub produced_mana: Option<BitFlags<Color>>,
+    pub produced_mana: Option<Colors>,
     pub reserved: bool,
     #[serde(borrow)]
     pub toughness: Option<Cow<'a, str>>,

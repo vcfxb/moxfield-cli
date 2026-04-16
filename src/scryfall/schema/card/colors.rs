@@ -9,22 +9,20 @@ use std::fmt::{Formatter, Write};
 #[repr(u8)]
 pub enum Color { W, U, B, R, G }
 
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Hash)]
+pub struct Colors(pub BitFlags<Color>);
+
+impl<'de> Deserialize<'de> for Colors {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>
+    {
+        deserializer.deserialize_seq(ColorArrayToSet).map(Colors)
+    }
+}
+
 pub struct ColorArrayToSet;
 
-pub struct OptionalColorArrayToSet;
-
-
-pub fn deserialize_with_color_array_to_set<'de, D>(d: D) -> Result<BitFlags<Color>, D::Error>
-where D: Deserializer<'de>
-{
-    d.deserialize_seq(ColorArrayToSet)
-}
-
-pub fn deserialize_optional_color_array_to_set<'de, D>(d: D) -> Result<Option<BitFlags<Color>>, D::Error>
-where D: Deserializer<'de>
-{
-    d.deserialize_option(OptionalColorArrayToSet)
-}
 
 impl<'de> Visitor<'de> for ColorArrayToSet {
     type Value = BitFlags<Color>;
@@ -51,27 +49,5 @@ impl<'de> Visitor<'de> for ColorArrayToSet {
         }
 
         Ok(colors)
-    }
-}
-
-impl<'de> Visitor<'de> for OptionalColorArrayToSet {
-    type Value = Option<<ColorArrayToSet as Visitor<'de>>::Value>;
-
-    fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
-        formatter.write_str("optional color array")
-    }
-
-    fn visit_none<E>(self) -> Result<Self::Value, E>
-    where
-        E: Error,
-    {
-        Ok(None)
-    }
-
-    fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_seq(ColorArrayToSet).map(Some)
     }
 }

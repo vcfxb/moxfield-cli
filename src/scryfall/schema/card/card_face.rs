@@ -1,13 +1,11 @@
+use crate::scryfall::schema::card::colors::Colors;
+use crate::scryfall::schema::card::layout::Layout;
+use crate::utils::deserialize_matches::DeserializeMatches;
+use serde::{Deserialize, Deserializer};
 use std::borrow::Cow;
 use std::collections::HashMap;
-use enumflags2::BitFlags;
-use serde::{Deserialize, Deserializer};
 use url::Url;
 use uuid::Uuid;
-use crate::scryfall::schema::card::colors::Color;
-use crate::utils::deserialize_matches::DeserializeMatches;
-use crate::scryfall::schema::card::colors::deserialize_optional_color_array_to_set;
-use crate::scryfall::schema::card::layout::Layout;
 
 #[derive(Deserialize, Debug)]
 pub struct CardFace<'a> {
@@ -15,10 +13,8 @@ pub struct CardFace<'a> {
     pub artist: Option<Cow<'a, str>>,
     pub artist_id: Option<Uuid>,
     pub cmc: Option<f32>,
-    #[serde(deserialize_with = "deserialize_optional_color_array_to_set")]
-    pub color_indicator: Option<BitFlags<Color>>,
-    #[serde(deserialize_with = "deserialize_optional_color_array_to_set")]
-    pub colors: Option<BitFlags<Color>>,
+    pub color_indicator: Option<Colors>,
+    pub colors: Option<Colors>,
     #[serde(borrow)]
     pub defense: Option<Cow<'a, str>>,
     #[serde(borrow)]
