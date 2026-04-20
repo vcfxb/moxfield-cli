@@ -1,16 +1,23 @@
 use std::borrow::Cow;
 use std::collections::HashMap;
-use enumflags2::BitFlags;
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer};
 use url::Url;
 use uuid::Uuid;
 use crate::scryfall::schema::card::card_face::CardFace;
-use crate::scryfall::schema::card::colors::{Color, Colors};
+use crate::scryfall::schema::card::colors::{Color};
 use crate::scryfall::schema::card::finishes::Finish;
+use crate::scryfall::schema::card::frame::{FrameEffect};
+use crate::scryfall::schema::card::games::Game;
+use crate::scryfall::schema::card::image_status::ImageStatus;
 use crate::scryfall::schema::card::languages::Language;
 use crate::scryfall::schema::card::layout::Layout;
 use crate::scryfall::schema::card::legalities::Legality;
+use crate::scryfall::schema::card::rarity::Rarity;
 use crate::scryfall::schema::card::related_card::RelatedCard;
+use crate::scryfall::schema::card::security_stamp::SecurityStamp;
+use crate::scryfall::schema::set::SetType;
+use crate::utils::array_to_bitflags::ArrayToBitset;
 use crate::utils::deserialize_matches::DeserializeMatches;
 
 pub mod colors;
@@ -20,6 +27,11 @@ pub mod related_card;
 pub mod card_face;
 pub mod legalities;
 pub mod finishes;
+pub mod frame;
+pub mod games;
+pub mod image_status;
+pub mod rarity;
+pub mod security_stamp;
 
 #[derive(Debug, Deserialize)]
 pub struct ScryfallCard<'a> {
@@ -48,9 +60,9 @@ pub struct ScryfallCard<'a> {
     #[serde(borrow)]
     pub card_faces: Option<Vec<CardFace<'a>>>,
     pub cmc: f32,
-    pub color_identity: Colors,
-    pub color_indicator: Option<Colors>,
-    pub colors: Option<Colors>,
+    pub color_identity: ArrayToBitset<Color>,
+    pub color_indicator: Option<ArrayToBitset<Color>>,
+    pub colors: Option<ArrayToBitset<Color>>,
     #[serde(borrow)]
     pub defense: Option<Cow<'a, str>>,
     pub edhrec_rank: Option<u64>,
@@ -74,7 +86,7 @@ pub struct ScryfallCard<'a> {
     pub penny_rank: Option<u64>,
     #[serde(borrow)]
     pub power: Option<Cow<'a, str>>,
-    pub produced_mana: Option<Colors>,
+    pub produced_mana: Option<ArrayToBitset<Color>>,
     pub reserved: bool,
     #[serde(borrow)]
     pub toughness: Option<Cow<'a, str>>,
@@ -98,7 +110,51 @@ pub struct ScryfallCard<'a> {
     pub flavor_name: Option<Cow<'a, str>>,
     #[serde(borrow)]
     pub flavor_text: Option<Cow<'a, str>>,
-    // todo: frame, etc
+    pub frame_effects: Option<ArrayToBitset<FrameEffect>>,
+    #[serde(borrow)]
+    pub frame: Cow<'a, str>,
+    pub full_art: bool,
+    pub games: ArrayToBitset<Game>,
+    pub highres_image: bool,
+    pub illustration_id: Option<Uuid>,
+    pub image_status: ImageStatus,
+    #[serde(borrow)]
+    pub image_uris: Option<HashMap<Cow<'a, str>, Url>>,
+    pub oversized: bool,
+    #[serde(borrow)]
+    pub prices: HashMap<Cow<'a, str>, f32>,
+    #[serde(borrow)]
+    pub printed_name: Option<Cow<'a, str>>,
+    #[serde(borrow)]
+    pub printed_text: Option<Cow<'a, str>>,
+    #[serde(borrow)]
+    pub printed_type_line: Option<Cow<'a, str>>,
+    pub promo: bool,
+    #[serde(borrow)]
+    pub promo_types: Option<Vec<Cow<'a, str>>>,
+    #[serde(borrow)]
+    pub purchase_uris: Option<HashMap<Cow<'a, str>, Url>>,
+    pub rarity: Rarity,
+    #[serde(borrow)]
+    pub related_uris: HashMap<Cow<'a, str>, Url>,
+    pub released_at: DateTime<Utc>,
+    pub reprint: bool,
+    pub scryfall_set_uri: Url,
+    #[serde(borrow)]
+    pub set_name: Cow<'a, str>,
+    pub set_search_uri: Url,
+    pub set_type: SetType,
+    pub set_uri: Url,
+    #[serde(borrow)]
+    pub set: Cow<'a, str>,
+    pub set_id: Uuid,
+    pub story_spotlight: bool,
+    pub textless: bool,
+    pub variation: bool,
+    pub variation_of: Option<Uuid>,
+    pub security_stamp: Option<SecurityStamp>,
+    #[serde(borrow)]
+    pub watermark: Option<Cow<'a, str>>,
 }
 
 fn deserialize_object_name<'de, D>(deserializer: D) -> Result<&'static str, D::Error>
