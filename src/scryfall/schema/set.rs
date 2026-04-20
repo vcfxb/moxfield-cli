@@ -1,9 +1,9 @@
-use std::borrow::Cow;
+use crate::utils::deserialize_matches::DeserializeMatches;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer};
+use std::borrow::Cow;
 use url::Url;
 use uuid::Uuid;
-use crate::utils::deserialize_matches::DeserializeMatches;
 
 #[derive(Copy, Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
@@ -31,7 +31,7 @@ pub enum SetType {
     Promo,
     Token,
     Memorabilia,
-    Minigame
+    Minigame,
 }
 
 #[derive(Deserialize, Debug)]
@@ -68,7 +68,8 @@ pub struct ScryfallSet<'a> {
 }
 
 fn deserialize_object_name<'de, D>(deserializer: D) -> Result<&'static str, D::Error>
-where D: Deserializer<'de>
+where
+    D: Deserializer<'de>,
 {
     deserializer.deserialize_str(DeserializeMatches("set"))
 }

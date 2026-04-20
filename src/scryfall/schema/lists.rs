@@ -1,7 +1,7 @@
-use std::borrow::Cow;
 use crate::utils::deserialize_matches::DeserializeMatches;
-use serde::Deserializer;
 use serde::Deserialize;
+use serde::Deserializer;
+use std::borrow::Cow;
 use url::Url;
 
 #[derive(Deserialize, Debug)]
@@ -16,7 +16,8 @@ pub struct ScryfallList<'a, T> {
 }
 
 fn deserialize_object_name<'de, D>(deserializer: D) -> Result<&'static str, D::Error>
-where D: Deserializer<'de>
+where
+    D: Deserializer<'de>,
 {
     deserializer.deserialize_str(DeserializeMatches("list"))
 }

@@ -5,5 +5,5 @@ use serde::Deserialize;
 pub enum Finish {
     Foil,
     Nonfoil,
-    Etched
+    Etched,
 }

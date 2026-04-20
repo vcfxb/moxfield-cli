@@ -41,5 +41,5 @@ pub enum Language {
     /// Phyrexian
     Ph,
     /// Quenya -- lotr language
-    Qya
+    Qya,
 }

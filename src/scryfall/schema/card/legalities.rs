@@ -6,5 +6,5 @@ pub enum Legality {
     Legal,
     NotLegal,
     Restricted,
-    Banned
+    Banned,
 }

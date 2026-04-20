@@ -6,5 +6,5 @@ pub enum ImageStatus {
     Missing,
     Placeholder,
     Lowres,
-    HighresScan
+    HighresScan,
 }

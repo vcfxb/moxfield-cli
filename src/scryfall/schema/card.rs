@@ -1,13 +1,7 @@
-use std::borrow::Cow;
-use std::collections::HashMap;
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Deserializer};
-use url::Url;
-use uuid::Uuid;
 use crate::scryfall::schema::card::card_face::CardFace;
-use crate::scryfall::schema::card::colors::{Color};
+use crate::scryfall::schema::card::colors::Color;
 use crate::scryfall::schema::card::finishes::Finish;
-use crate::scryfall::schema::card::frame::{FrameEffect};
+use crate::scryfall::schema::card::frame::FrameEffect;
 use crate::scryfall::schema::card::games::Game;
 use crate::scryfall::schema::card::image_status::ImageStatus;
 use crate::scryfall::schema::card::languages::Language;
@@ -19,18 +13,24 @@ use crate::scryfall::schema::card::security_stamp::SecurityStamp;
 use crate::scryfall::schema::set::SetType;
 use crate::utils::array_to_bitflags::ArrayToBitset;
 use crate::utils::deserialize_matches::DeserializeMatches;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Deserializer};
+use std::borrow::Cow;
+use std::collections::HashMap;
+use url::Url;
+use uuid::Uuid;
 
-pub mod colors;
-pub mod languages;
-pub mod layout;
-pub mod related_card;
 pub mod card_face;
-pub mod legalities;
+pub mod colors;
 pub mod finishes;
 pub mod frame;
 pub mod games;
 pub mod image_status;
+pub mod languages;
+pub mod layout;
+pub mod legalities;
 pub mod rarity;
+pub mod related_card;
 pub mod security_stamp;
 
 #[derive(Debug, Deserialize)]
@@ -158,7 +158,8 @@ pub struct ScryfallCard<'a> {
 }
 
 fn deserialize_object_name<'de, D>(deserializer: D) -> Result<&'static str, D::Error>
-where D: Deserializer<'de>
+where
+    D: Deserializer<'de>,
 {
     deserializer.deserialize_str(DeserializeMatches("card"))
 }

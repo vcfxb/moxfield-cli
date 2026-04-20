@@ -1,8 +1,8 @@
+use enumflags2::{BitFlag, BitFlags};
+use serde::de::{Error, SeqAccess, Unexpected, Visitor};
+use serde::{Deserialize, Deserializer};
 use std::fmt::Formatter;
 use std::marker::PhantomData;
-use enumflags2::{BitFlag, BitFlags};
-use serde::{Deserialize, Deserializer};
-use serde::de::{SeqAccess, Unexpected, Visitor, Error};
 use strum::IntoEnumIterator;
 
 pub trait ExpectStr {
@@ -16,25 +16,28 @@ pub struct ArrayToBitset<T: Into<&'static str> + IntoEnumIterator + BitFlag + Ex
 }
 
 impl<'de, T> Deserialize<'de> for ArrayToBitset<T>
-where T: Into<&'static str> + IntoEnumIterator + BitFlag + ExpectStr
+where
+    T: Into<&'static str> + IntoEnumIterator + BitFlag + ExpectStr,
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>
+        D: Deserializer<'de>,
     {
-
         deserializer
-            .deserialize_seq(AnonVisitor::<T> { _phantom: PhantomData })
+            .deserialize_seq(AnonVisitor::<T> {
+                _phantom: PhantomData,
+            })
             .map(|bitflags| ArrayToBitset { bitflags })
     }
 }
 
 struct AnonVisitor<I> {
-    _phantom: PhantomData<I>
+    _phantom: PhantomData<I>,
 }
 
 impl<'de, I> Visitor<'de> for AnonVisitor<I>
-where I: BitFlag + ExpectStr + IntoEnumIterator + Into<&'static str>
+where
+    I: BitFlag + ExpectStr + IntoEnumIterator + Into<&'static str>,
 {
     type Value = BitFlags<I>;
 

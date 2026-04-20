@@ -1,7 +1,7 @@
+use crate::utils::array_to_bitflags::ExpectStr;
 use enumflags2::bitflags;
 use serde::{Deserialize, Serialize};
 use strum::{EnumIter, IntoStaticStr};
-use crate::utils::array_to_bitflags::ExpectStr;
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Copy, Clone, EnumIter, IntoStaticStr)]
 #[serde(rename_all = "lowercase")]
@@ -31,7 +31,7 @@ pub enum FrameEffect {
     ConvertDfc,
     FanDfc,
     UpsideDownDfc,
-    Spree
+    Spree,
 }
 
 impl ExpectStr for FrameEffect {

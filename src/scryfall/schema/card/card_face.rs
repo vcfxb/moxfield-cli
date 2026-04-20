@@ -1,12 +1,12 @@
 use crate::scryfall::schema::card::colors::Color;
 use crate::scryfall::schema::card::layout::Layout;
+use crate::utils::array_to_bitflags::ArrayToBitset;
 use crate::utils::deserialize_matches::DeserializeMatches;
 use serde::{Deserialize, Deserializer};
 use std::borrow::Cow;
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
-use crate::utils::array_to_bitflags::ArrayToBitset;
 
 #[derive(Deserialize, Debug)]
 pub struct CardFace<'a> {
@@ -52,7 +52,8 @@ pub struct CardFace<'a> {
 }
 
 fn deserialize_object_name<'de, D>(deserializer: D) -> Result<&'static str, D::Error>
-where D: Deserializer<'de>
+where
+    D: Deserializer<'de>,
 {
     deserializer.deserialize_str(DeserializeMatches("card_face"))
 }

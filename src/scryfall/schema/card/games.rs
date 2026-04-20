@@ -1,8 +1,8 @@
+use crate::utils::array_to_bitflags::ExpectStr;
 use enumflags2::bitflags;
 use serde::{Deserialize, Serialize};
 use strum::EnumIter;
 use strum::IntoStaticStr;
-use crate::utils::array_to_bitflags::ExpectStr;
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Copy, Clone, EnumIter, IntoStaticStr)]
 #[serde(rename_all = "lowercase")]
@@ -13,7 +13,7 @@ pub enum Game {
     Arena,
     Mtgo,
     Astral,
-    Sega
+    Sega,
 }
 
 impl ExpectStr for Game {

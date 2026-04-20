@@ -1,7 +1,7 @@
 //! Deserialize strings that exactly match the parameterized const.
 
-use std::fmt;
 use serde::de::{Error, Unexpected, Visitor};
+use std::fmt;
 
 /// Deserialize successfully only if the input matches a specific string.
 pub struct DeserializeMatches(pub &'static str);

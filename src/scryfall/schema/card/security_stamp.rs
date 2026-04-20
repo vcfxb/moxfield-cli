@@ -8,5 +8,5 @@ pub enum SecurityStamp {
     Acorn,
     Circle,
     Arena,
-    Heart
+    Heart,
 }
