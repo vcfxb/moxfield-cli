@@ -1,22 +1,24 @@
 //! Refresh the local copy of scryfall's bulk data export.
 
-use std::path::PathBuf;
-use std::sync::LazyLock;
+use futures::StreamExt;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use log::LevelFilter;
+use moxfield_cli::scryfall::client::ScryfallClient;
+use std::path::PathBuf;
+use std::sync::LazyLock;
 use tokio::fs::File;
 use tokio::io::{AsyncWriteExt, BufWriter};
 use url::Url;
-use moxfield_cli::scryfall::client::ScryfallClient;
-use futures::StreamExt;
 
 static MULTIPROGRESS: LazyLock<MultiProgress> = LazyLock::new(|| MultiProgress::new());
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let logger = env_logger::Builder::from_default_env().filter_level(LevelFilter::Info).build();
+    let logger = env_logger::Builder::from_default_env()
+        .filter_level(LevelFilter::Info)
+        .build();
     let bridge = indicatif_log_bridge::LogWrapper::new(MULTIPROGRESS.clone(), logger);
-    bridge.try_init().unwrap();
+    bridge.try_init()?;
 
     let scryfall_client = ScryfallClient::new();
     let bulk_data = scryfall_client.bulk_data().await?;

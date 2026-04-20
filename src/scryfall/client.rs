@@ -1,11 +1,11 @@
+use governor::clock::{Clock, DefaultClock, QuantaClock};
 use governor::{DefaultDirectRateLimiter, Quota, RateLimiter};
-use reqwest::{Client, Method};
 use reqwest::header::HeaderMap;
-use std::num::NonZeroU32;
-use std::sync::Arc;
-use governor::clock::{QuantaClock, Clock, DefaultClock};
+use reqwest::{Client, Method};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
+use std::num::NonZeroU32;
+use std::sync::Arc;
 use thiserror::Error;
 use tokio::io::AsyncWrite;
 
@@ -44,14 +44,22 @@ impl ScryfallClient {
         }
     }
 
-    async fn call<T: DeserializeOwned>(&self, method: Method, route: impl AsRef<str>) -> reqwest::Result<T> {
+    async fn call<T: DeserializeOwned>(
+        &self,
+        method: Method,
+        route: impl AsRef<str>,
+    ) -> reqwest::Result<T> {
         if let Err(not_until) = self.rl.check() {
             let now = DefaultClock::default().now();
-            log::warn!("Hit Scryfall API ratelimit, waiting {:?}", not_until.wait_time_from(now));
+            log::warn!(
+                "Hit Scryfall API ratelimit, waiting {:?}",
+                not_until.wait_time_from(now)
+            );
             self.rl.until_ready().await;
         }
 
-        self.client.request(method, format!("{}/{}", Self::ROOT_URL, route.as_ref()))
+        self.client
+            .request(method, format!("{}/{}", Self::ROOT_URL, route.as_ref()))
             .send()
             .await?
             .json()
