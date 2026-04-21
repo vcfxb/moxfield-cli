@@ -8,6 +8,7 @@ use std::num::NonZeroU32;
 use std::sync::Arc;
 use thiserror::Error;
 use tokio::io::AsyncWrite;
+use crate::scryfall::schema::bulk_data::BulkData;
 
 pub struct ScryfallClient {
     client: Client,
@@ -66,7 +67,7 @@ impl ScryfallClient {
             .await
     }
 
-    pub async fn bulk_data(&self) -> reqwest::Result<Value> {
+    pub async fn bulk_data(&self) -> reqwest::Result<BulkData> {
         self.call(Method::GET, "bulk-data").await
     }
 }

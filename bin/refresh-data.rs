@@ -22,17 +22,13 @@ async fn main() -> anyhow::Result<()> {
 
     let scryfall_client = ScryfallClient::new();
     let bulk_data = scryfall_client.bulk_data().await?;
-    let all_cards = bulk_data["data"]
-        .as_array()
-        .expect("data is array")
+    let all_cards = bulk_data.data
         .iter()
-        .filter_map(|v| v.as_object())
-        .find(|v| v["type"] == "all_cards")
+        .find(|v| v.r#type == "all_cards")
         .expect("found all_cards");
 
-    let uri = all_cards["download_uri"].as_str().unwrap().parse::<Url>()?;
-    let file_name = uri.path_segments().unwrap().rev().next().unwrap();
-    let size = all_cards["size"].as_i64().unwrap();
+    let file_name = all_cards.download_uri.path_segments().unwrap().rev().next().unwrap();
+    let size = all_cards.size;
 
     static DOWNLOAD_STYLE: LazyLock<ProgressStyle> = LazyLock::new(|| {
         ProgressStyle::with_template("[{decimal_bytes} / {decimal_total_bytes} {elapsed}] {msg} {wide_bar} {decimal_bytes_per_sec}").unwrap()
@@ -42,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
     progress.set_style(DOWNLOAD_STYLE.clone());
     progress.set_message("pulling bulk data");
 
-    let response = reqwest::get(uri.clone()).await?;
+    let response = reqwest::get(all_cards.download_uri.clone()).await?;
     let mut byte_stream = response.bytes_stream();
 
     if !PathBuf::from("scryfall_pull").exists() {
