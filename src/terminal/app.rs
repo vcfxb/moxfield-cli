@@ -1,13 +1,13 @@
-use std::io::Stdout;
-use crossterm::cursor;
-use ratatui::prelude::*;
-use ratatui::widgets::{Block, Borders};
-use tokio::task::JoinHandle;
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
-use crossterm::event::{KeyEvent, KeyCode, KeyModifiers, KeyEventKind};
-use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use crate::terminal::event_loop::{Event, EventLoop};
 use crate::terminal::widget::fps::FpsState;
+use crossterm::cursor;
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
+use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
+use ratatui::prelude::*;
+use ratatui::widgets::{Block, Borders};
+use std::io::Stdout;
+use tokio::task::JoinHandle;
 
 pub struct App {
     term: Terminal<CrosstermBackend<Stdout>>,
@@ -64,12 +64,8 @@ impl App {
                             f.render_widget(block, f.area());
                             f.render_widget(&mut self.fps_state, f.area());
 
-                            f.buffer_mut().set_string(
-                                1,
-                                0,
-                                "oshibana",
-                                Style::new().italic()
-                            );
+                            f.buffer_mut()
+                                .set_string(1, 0, "oshibana", Style::new().italic());
                         })?;
                     }
 
@@ -83,9 +79,7 @@ impl App {
                         break;
                     }
 
-                    _other => {
-
-                    },
+                    _other => {}
                 }
             }
 

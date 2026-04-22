@@ -1,12 +1,11 @@
-use std::sync::LazyLock;
 use directories::ProjectDirs;
 use moxfield_cli::scryfall::client::ScryfallClient;
 use moxfield_cli::terminal::app::App;
+use std::sync::LazyLock;
 
 static SCRYFALL: LazyLock<ScryfallClient> = LazyLock::new(|| ScryfallClient::new());
-static DIRECTORIES: LazyLock<ProjectDirs> = LazyLock::new(|| {
-    ProjectDirs::from("org", "vcfxb", env!("CARGO_PKG_NAME")).unwrap()
-});
+static DIRECTORIES: LazyLock<ProjectDirs> =
+    LazyLock::new(|| ProjectDirs::from("org", "vcfxb", env!("CARGO_PKG_NAME")).unwrap());
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {
@@ -21,7 +20,7 @@ async fn main() -> color_eyre::Result<()> {
         println!("[press any key to exit]");
         moxfield_cli::terminal::wait_for_key_press().unwrap();
     }));
-    
+
     // now that we have a panic hook set, we can make an event loop and pass it to the app.
     let app = App::new(60.0, 6.0)?;
     app.run().await??;

@@ -1,3 +1,4 @@
+use crate::scryfall::schema::bulk_data::BulkData;
 use governor::clock::{Clock, DefaultClock};
 use governor::{DefaultDirectRateLimiter, Quota, RateLimiter};
 use reqwest::header::HeaderMap;
@@ -6,7 +7,6 @@ use serde::de::DeserializeOwned;
 use std::num::NonZeroU32;
 use std::sync::Arc;
 use thiserror::Error;
-use crate::scryfall::schema::bulk_data::BulkData;
 
 pub struct ScryfallClient {
     client: Client,

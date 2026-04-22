@@ -19,7 +19,6 @@ pub struct BulkData {
 //     deserializer.deserialize_str(DeserializeMatches("bulk_data"))
 // }
 
-
 #[derive(Deserialize, Debug)]
 pub struct BulkDataItem {
     pub id: Uuid,

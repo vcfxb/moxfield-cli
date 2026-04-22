@@ -14,7 +14,10 @@ struct RingBuffer<T> {
 }
 
 impl<T> RingBuffer<T> {
-    pub fn new(size: usize, fill: T) -> Self where T: Copy {
+    pub fn new(size: usize, fill: T) -> Self
+    where
+        T: Copy,
+    {
         RingBuffer {
             buffer: vec![fill; size].into_boxed_slice(),
             start: 0,
@@ -61,7 +64,8 @@ impl<T> RingBuffer<T> {
             let r = self.get(index);
             index += 1;
             r
-        }).fuse()
+        })
+        .fuse()
     }
 }
 
@@ -75,7 +79,7 @@ impl FpsState {
     pub fn new() -> Self {
         FpsState {
             ring_buffer: RingBuffer::new(64, Instant::now()),
-            displayed_fps: 0.0
+            displayed_fps: 0.0,
         }
     }
 
@@ -95,19 +99,18 @@ impl FpsState {
         let elapsed = start.elapsed().as_secs_f64();
         let count = self.ring_buffer.len();
 
-        (count as f64)/elapsed
+        (count as f64) / elapsed
     }
 }
 
 impl<'a> Widget for &'a mut FpsState {
     fn render(self, area: Rect, buf: &mut Buffer)
     where
-        Self: Sized
+        Self: Sized,
     {
         self.render_tick();
-        
-        let v_rects = Layout::vertical([Constraint::Length(1), Constraint::Min(0)])
-            .split(area);
+
+        let v_rects = Layout::vertical([Constraint::Length(1), Constraint::Min(0)]).split(area);
 
         let h_rects = Layout::horizontal([Constraint::Percentage(100), Constraint::Min(10)])
             .split(v_rects[0]);
@@ -117,7 +120,8 @@ impl<'a> Widget for &'a mut FpsState {
 
         let gradient = colorgrad::preset::rd_yl_gn();
         let (g_start, g_end) = gradient.domain();
-        let color_index = ((self.displayed_fps as f32)/60.0 * (g_end - g_start) + g_start).clamp(g_start, g_end);
+        let color_index = ((self.displayed_fps as f32) / 60.0 * (g_end - g_start) + g_start)
+            .clamp(g_start, g_end);
         let color = gradient.at(color_index);
         let as_24bit = color.to_rgba8();
 
