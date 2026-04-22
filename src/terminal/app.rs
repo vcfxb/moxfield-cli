@@ -60,8 +60,8 @@ impl App {
                         self.term.set_cursor_position((0, 0))?;
                         self.term.clear()?;
                         self.term.draw(|f| {
-                            let block = Block::bordered()
-                                .title_top(Line::from("oshibana").italic());
+                            let block =
+                                Block::bordered().title_top(Line::from("oshibana").italic());
 
                             f.render_widget(block, f.area());
                             f.render_widget(&mut self.fps_state, f.area());

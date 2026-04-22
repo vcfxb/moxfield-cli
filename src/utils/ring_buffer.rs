@@ -71,6 +71,9 @@ mod tests {
             rb.push(x);
         }
 
-        assert_eq!(rb.iter().copied().collect::<Vec<u8>>(), vec![6, 7, 8, 9, 10]);
+        assert_eq!(
+            rb.iter().copied().collect::<Vec<u8>>(),
+            vec![6, 7, 8, 9, 10]
+        );
     }
 }

@@ -1,12 +1,12 @@
 //! Fps widget -- this widget
 
+use crate::utils::ring_buffer::RingBuffer;
 use colorgrad::Gradient;
 use ratatui::buffer::Buffer;
 use ratatui::layout::Rect;
 use ratatui::prelude::{Constraint, Layout, Style, Widget};
 use ratatui::style::Color;
 use std::time::Instant;
-use crate::utils::ring_buffer::RingBuffer;
 
 pub struct FpsState {
     /// Ring buffer of instants representing times of the last few frames.
