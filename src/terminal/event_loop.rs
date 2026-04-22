@@ -20,6 +20,9 @@ pub enum Event {
     /// Sent to start each draw.
     Render,
 
+    /// Sent every app tick
+    Tick,
+
     Keyboard(KeyEvent),
     Mouse(MouseEvent),
     Paste(String),
@@ -39,11 +42,12 @@ pub struct EventLoop {
     event_rx: UnboundedReceiver<Event>,
     
     pub frame_rate: f64,
+    pub tick_rate: f64,
 }
 
 impl EventLoop {
     /// Create a new event loop. It will not be started until you start it.
-    pub fn new(frame_rate: f64) -> Self {
+    pub fn new(frame_rate: f64, tick_rate: f64) -> Self {
         let (event_tx, event_rx) = mpsc::unbounded_channel();
         
         Self {
@@ -51,7 +55,8 @@ impl EventLoop {
             cancellation_token: CancellationToken::new(),
             event_tx,
             event_rx,
-            frame_rate
+            frame_rate,
+            tick_rate
         }
     }
     
@@ -66,12 +71,20 @@ impl EventLoop {
         let frame_duration = Duration::from_secs_f64(1.0 / self.frame_rate);
         let mut frame_interval = tokio::time::interval(frame_duration);
 
+        let tick_duration = Duration::from_secs_f64(1.0 / self.tick_rate);
+        let mut tick_interval = tokio::time::interval(tick_duration);
+
         self.ev_loop.get_or_init(move || tokio::spawn(async move {
             'ev_loop: loop {
                 tokio::select! {
                     // cancel
                     _ = cancellation_token.cancelled() => {
                         break 'ev_loop;
+                    }
+
+                    // tick
+                    _ = tick_interval.tick() => {
+                        event_tx.send(Event::Tick).unwrap();
                     }
 
                     // render event
@@ -113,7 +126,7 @@ impl EventLoop {
         Ok(())
     }
 
-    pub async fn next_event(&mut self) -> Event {
-        self.event_rx.recv().await.expect("event loop terminated")
+    pub async fn next_event(&mut self) -> Option<Event> {
+        self.event_rx.recv().await
     }
 }

@@ -3,9 +3,9 @@ name = "moxfield-cli"
 version = "0.1.0"
 edition = "2024"
 
-[[bin]]
-name = "refresh-data"
-path = "bin/refresh-data.rs"
+#[[bin]]
+#name = "refresh-data"
+#path = "bin/refresh-data.rs"
 
 [[bin]]
 name = "main"
@@ -38,3 +38,4 @@ log = "0.4.29"
 crossterm = { version = "0.29.0", features = ["event-stream"] }
 color-eyre = "0.6.5"
 tokio-util = { version = "0.7.18", features = ["full"] }
+colorgrad = { version = "0.8.0", features = ["preset"] }

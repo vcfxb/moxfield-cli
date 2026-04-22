@@ -1,60 +1,91 @@
 use std::io::Stdout;
+use crossterm::cursor;
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders};
 use tokio::task::JoinHandle;
-use crossterm::event::Event as CtEvent;
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event as CtEvent};
 use crossterm::event::{KeyEvent, KeyCode, KeyModifiers, KeyEventKind};
-use crate::terminal::event_loop::EventLoop;
+use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
+use crate::terminal::event_loop::{Event, EventLoop};
+use crate::terminal::widget::fps::FpsState;
 
 pub struct App {
     term: Terminal<CrosstermBackend<Stdout>>,
     event_loop: EventLoop,
+    fps_state: FpsState,
 }
 
-/*
-        crossterm::terminal::disable_raw_mode()?;
-        crossterm::execute!(std::io::stdout(), LeaveAlternateScreen, cursor::Show)?;
- */
-
 impl App {
-    pub fn new(frame_rate: f64) -> color_eyre::Result<Self> {
+    pub fn new(frame_rate: f64, tick_rate: f64) -> color_eyre::Result<Self> {
         Ok(Self {
-            event_loop: EventLoop::new(frame_rate),
+            event_loop: EventLoop::new(frame_rate, tick_rate),
             term: Terminal::new(CrosstermBackend::new(std::io::stdout()))?,
+            fps_state: FpsState::new(),
         })
+    }
+
+    async fn quit(mut self) -> color_eyre::Result<()> {
+        crossterm::execute!(
+            std::io::stdout(),
+            LeaveAlternateScreen,
+            cursor::Show,
+            DisableMouseCapture
+        )?;
+
+        crossterm::terminal::disable_raw_mode()?;
+        self.event_loop.stop().await?;
+
+        Ok(())
     }
 
     pub fn run(mut self) -> JoinHandle<color_eyre::Result<()>> {
         tokio::spawn(async move {
             crossterm::terminal::enable_raw_mode()?;
-            crossterm::execute!(std::io::stdout(), EnterAlternateScreen, cursor::Hide)?;
+            crossterm::execute!(
+                std::io::stdout(),
+                EnterAlternateScreen,
+                cursor::Hide,
+                EnableMouseCapture
+            )?;
 
-            while let Some(ev) = self.tui.next().await {
+            self.event_loop.start()?;
+
+            while let Some(ev) = self.event_loop.next_event().await {
                 match ev {
+                    Event::Tick => {
+                        self.fps_state.app_tick();
+                    }
+
                     Event::Render => {
-                        self.tui.term.set_cursor_position((0, 0)).unwrap();
-                        self.tui.term.clear().unwrap();
-                        self.tui.term.draw(|f: &mut Frame| {
+                        self.term.set_cursor_position((0, 0))?;
+                        self.term.clear()?;
+                        self.term.draw(|f| {
                             let block = Block::default().borders(Borders::ALL);
                             f.render_widget(block, f.area());
-                        }).unwrap();
+                            f.render_widget(&mut self.fps_state, f.area());
+
+                            f.buffer_mut().set_string(
+                                1,
+                                0,
+                                "oshibana",
+                                Style::new().italic()
+                            );
+                        })?;
                     }
 
-                    Event::UserInput(CtEvent::Key(key_ev)) => match key_ev {
-                        KeyEvent {
-                            code: KeyCode::Char('c'),
-                            modifiers: KeyModifiers::CONTROL,
-                            kind: KeyEventKind::Press,
-                            ..
-                        } => {
-                            self.tui.exit().await?;
-                            break;
-                        },
-
-                        _ => {}
+                    Event::Keyboard(KeyEvent {
+                        code: KeyCode::Char('c'),
+                        modifiers: KeyModifiers::CONTROL,
+                        kind: KeyEventKind::Press,
+                        ..
+                    }) => {
+                        self.quit().await?;
+                        break;
                     }
 
-                    other => { dbg!(other); },
+                    other => {
+
+                    },
                 }
             }
 

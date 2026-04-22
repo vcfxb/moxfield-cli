@@ -4,7 +4,6 @@ use directories::ProjectDirs;
 use log::LevelFilter;
 use moxfield_cli::scryfall::client::ScryfallClient;
 use moxfield_cli::terminal::app::App;
-use moxfield_cli::terminal::rt::Tui;
 
 static SCRYFALL: LazyLock<ScryfallClient> = LazyLock::new(|| ScryfallClient::new());
 static DIRECTORIES: LazyLock<ProjectDirs> = LazyLock::new(|| {
@@ -26,7 +25,7 @@ async fn main() -> color_eyre::Result<()> {
     }));
     
     // now that we have a panic hook set, we can make an event loop and pass it to the app.
-    let app = App::new(60.0);
-    app.run().await?;
+    let app = App::new(60.0, 6.0)?;
+    app.run().await??;
     Ok(())
 }
