@@ -5,7 +5,7 @@ use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::prelude::*;
-use ratatui::widgets::{Block, Borders};
+use ratatui::widgets::Block;
 use std::io::Stdout;
 use tokio::task::JoinHandle;
 
@@ -60,12 +60,11 @@ impl App {
                         self.term.set_cursor_position((0, 0))?;
                         self.term.clear()?;
                         self.term.draw(|f| {
-                            let block = Block::default().borders(Borders::ALL);
+                            let block = Block::bordered()
+                                .title_top(Line::from("oshibana").italic());
+
                             f.render_widget(block, f.area());
                             f.render_widget(&mut self.fps_state, f.area());
-
-                            f.buffer_mut()
-                                .set_string(1, 0, "oshibana", Style::new().italic());
                         })?;
                     }
 
