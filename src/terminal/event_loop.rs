@@ -4,15 +4,12 @@
 
 use std::sync::OnceLock;
 use std::time::Duration;
-use crossterm::cursor;
 use futures::prelude::*;
-use ratatui::backend::CrosstermBackend;
 use tokio::task::JoinHandle;
 use tokio::sync::mpsc;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 use tokio_util::sync::CancellationToken;
 use crossterm::event::{Event as CtEvent, KeyEvent, MouseEvent};
-use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use tokio_util::future::FutureExt;
 
 #[derive(Debug)]

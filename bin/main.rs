@@ -1,7 +1,5 @@
-use strum::IntoEnumIterator;
 use std::sync::LazyLock;
 use directories::ProjectDirs;
-use log::LevelFilter;
 use moxfield_cli::scryfall::client::ScryfallClient;
 use moxfield_cli::terminal::app::App;
 

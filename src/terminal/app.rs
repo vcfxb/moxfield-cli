@@ -3,7 +3,7 @@ use crossterm::cursor;
 use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders};
 use tokio::task::JoinHandle;
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture, Event as CtEvent};
+use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::event::{KeyEvent, KeyCode, KeyModifiers, KeyEventKind};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use crate::terminal::event_loop::{Event, EventLoop};
@@ -24,7 +24,7 @@ impl App {
         })
     }
 
-    async fn quit(mut self) -> color_eyre::Result<()> {
+    async fn quit(self) -> color_eyre::Result<()> {
         crossterm::execute!(
             std::io::stdout(),
             LeaveAlternateScreen,
@@ -83,7 +83,7 @@ impl App {
                         break;
                     }
 
-                    other => {
+                    _other => {
 
                     },
                 }
