@@ -58,7 +58,6 @@ impl App {
 
                     Event::Render => {
                         self.term.set_cursor_position((0, 0))?;
-                        self.term.clear()?;
                         self.term.draw(|f| {
                             let block =
                                 Block::bordered().title_top(Line::from("oshibana").italic());

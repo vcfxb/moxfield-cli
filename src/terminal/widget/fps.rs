@@ -31,12 +31,14 @@ impl FpsState {
     }
 
     pub fn average_fps(&self) -> f64 {
-        let Some(start) = self.ring_buffer.get(0) else {
+        let Some(start) = self.ring_buffer.first() else {
             return 0.0;
         };
-
-        let elapsed = start.elapsed().as_secs_f64();
-        let count = self.ring_buffer.len();
+        
+        let last = self.ring_buffer.last().unwrap();
+        let elapsed = (*last - *start).as_secs_f64();
+        // the final instant is for a frame that may not have finished rendering, so we exclude it
+        let count = self.ring_buffer.len() - 1;
 
         (count as f64) / elapsed
     }

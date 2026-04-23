@@ -37,6 +37,14 @@ impl<T> RingBuffer<T> {
 
         Some(&self.buffer[adjusted])
     }
+    
+    pub fn first(&self) -> Option<&T> {
+        self.get(0)
+    }
+    
+    pub fn last(&self) -> Option<&T> {
+        self.get(self.len() - 1)
+    }
 
     pub fn push(&mut self, t: T) {
         let write_index = (self.start + self.size) % self.capacity();
