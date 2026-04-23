@@ -2,8 +2,6 @@ use moxfield_cli::terminal::app::App;
 
 //
 // static SCRYFALL: LazyLock<ScryfallClient> = LazyLock::new(|| ScryfallClient::new());
-// static DIRECTORIES: LazyLock<ProjectDirs> =
-//     LazyLock::new(|| ProjectDirs::from("org", "vcfxb", env!("CARGO_PKG_NAME")).unwrap());
 
 #[tokio::main]
 async fn main() -> color_eyre::Result<()> {

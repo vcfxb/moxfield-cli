@@ -39,3 +39,4 @@ crossterm = { version = "0.29.0", features = ["event-stream"] }
 color-eyre = "0.6.5"
 tokio-util = { version = "0.7.18", features = ["full"] }
 colorgrad = { version = "0.8.0", features = ["preset"] }
+humansize = "2.1.3"

@@ -8,6 +8,7 @@ use ratatui::prelude::*;
 use ratatui::widgets::Block;
 use std::io::Stdout;
 use tokio::task::JoinHandle;
+use crate::terminal::widget::main_menu::MainMenu;
 
 pub struct App {
     term: Terminal<CrosstermBackend<Stdout>>,
@@ -25,6 +26,8 @@ impl App {
     }
 
     async fn quit(self) -> color_eyre::Result<()> {
+        self.event_loop.stop().await?;
+
         crossterm::execute!(
             std::io::stdout(),
             LeaveAlternateScreen,
@@ -33,7 +36,6 @@ impl App {
         )?;
 
         crossterm::terminal::disable_raw_mode()?;
-        self.event_loop.stop().await?;
 
         Ok(())
     }
@@ -59,11 +61,24 @@ impl App {
                     Event::Render => {
                         self.term.set_cursor_position((0, 0))?;
                         self.term.draw(|f| {
-                            let block =
-                                Block::bordered().title_top(Line::from("oshibana").italic());
+                            // full block
+                            let block = Block::bordered()
+                                .title_top(Line::from("oshibana").italic());
 
-                            f.render_widget(block, f.area());
+                            // render full block + fps
+                            f.render_widget(&block, f.area());
                             f.render_widget(&mut self.fps_state, f.area());
+
+                            // create layout for rendering
+
+                            // if there are progress bars, render a block for those
+
+                            // // render active view
+                            // let view: &mut dyn View = self.view.as_mut();
+                            // f.render_widget(view, f.area());
+                            // render main menu
+                            f.render_widget(&MainMenu {}, block.inner(f.area()));
+
                         })?;
                     }
 
