@@ -66,7 +66,7 @@ impl<'a> Widget for &'a mut FpsState {
         let color = gradient.at(color_index);
         let as_24bit = color.to_rgba8();
 
-        let style = Style::new().fg(Color::Rgb(as_24bit[0], as_24bit[1], as_24bit[2]));
+        let style = Style::new().fg(Color::Rgb(as_24bit[0], as_24bit[1], as_24bit[2])).on_white();
         buf.set_stringn(rect.x, rect.y, string, 9, style);
     }
 }

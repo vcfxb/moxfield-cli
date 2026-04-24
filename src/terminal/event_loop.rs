@@ -24,6 +24,9 @@ pub enum Event {
     Mouse(MouseEvent),
     Paste(String),
     Resize(u16, u16),
+
+    /// The last event sent on the loop before it stops.
+    Quit,
 }
 
 pub struct EventLoop {
@@ -110,7 +113,12 @@ impl EventLoop {
         Ok(())
     }
 
-    pub async fn stop(mut self) -> color_eyre::Result<()> {
+    pub fn send_quit(&mut self) -> color_eyre::Result<()> {
+        self.event_tx.send(Event::Quit)?;
+        Ok(())
+    }
+
+    pub async fn stop(&mut self) -> color_eyre::Result<()> {
         // if there is no event loop to cancel, we don't need to do anything.
         let Some(ev_loop_handle) = self.ev_loop.take() else {
             return Ok(());

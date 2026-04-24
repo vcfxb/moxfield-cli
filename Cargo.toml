@@ -40,3 +40,5 @@ color-eyre = "0.6.5"
 tokio-util = { version = "0.7.18", features = ["full"] }
 colorgrad = { version = "0.8.0", features = ["preset"] }
 humansize = "2.1.3"
+anymap3 = "1.0.1"
+tui-widget-list = "0.15.2"

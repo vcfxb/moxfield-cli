@@ -1,19 +1,26 @@
 use crate::terminal::event_loop::{Event, EventLoop};
-use crate::terminal::widget::fps::FpsState;
+use anymap3::Map;
 use crossterm::cursor;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use crossterm::terminal::{EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::prelude::*;
-use ratatui::widgets::Block;
+use std::any::Any;
 use std::io::Stdout;
 use tokio::task::JoinHandle;
-use crate::terminal::widget::main_menu::MainMenu;
+use view::View;
+use widget::fps::FpsState;
+
+pub mod view;
+pub mod widget;
+pub mod state;
 
 pub struct App {
     term: Terminal<CrosstermBackend<Stdout>>,
     event_loop: EventLoop,
     fps_state: FpsState,
+    view: &'static dyn View,
+    view_states: Map<dyn Any + Send + Sync>,
 }
 
 impl App {
@@ -22,12 +29,12 @@ impl App {
             event_loop: EventLoop::new(frame_rate, tick_rate),
             term: Terminal::new(CrosstermBackend::new(std::io::stdout()))?,
             fps_state: FpsState::new(),
+            view: &view::home::Home,
+            view_states: Map::new(),
         })
     }
 
-    async fn quit(self) -> color_eyre::Result<()> {
-        self.event_loop.stop().await?;
-
+    fn quit(&mut self) -> color_eyre::Result<()> {
         crossterm::execute!(
             std::io::stdout(),
             LeaveAlternateScreen,
@@ -56,43 +63,38 @@ impl App {
                 match ev {
                     Event::Tick => {
                         self.fps_state.app_tick();
+                        self.view.handle_tick(&mut self)?;
                     }
 
                     Event::Render => {
                         self.term.set_cursor_position((0, 0))?;
-                        self.term.draw(|f| {
-                            // full block
-                            let block = Block::bordered()
-                                .title_top(Line::from("oshibana").italic());
-
-                            // render full block + fps
-                            f.render_widget(&block, f.area());
-                            f.render_widget(&mut self.fps_state, f.area());
-
-                            // create layout for rendering
-
-                            // if there are progress bars, render a block for those
-
-                            // // render active view
-                            // let view: &mut dyn View = self.view.as_mut();
-                            // f.render_widget(view, f.area());
-                            // render main menu
-                            f.render_widget(&MainMenu {}, block.inner(f.area()));
-
-                        })?;
+                        self.view.render(&mut self)?;
                     }
 
-                    Event::Keyboard(KeyEvent {
+                    Event::Quit | Event::Keyboard(KeyEvent {
                         code: KeyCode::Char('c'),
                         modifiers: KeyModifiers::CONTROL,
                         kind: KeyEventKind::Press,
                         ..
                     }) => {
-                        self.quit().await?;
+                        self.quit()?;
+                        self.event_loop.stop().await?;
                         break;
                     }
 
-                    _other => {}
+                    Event::Keyboard(key_ev) => {
+                        self.view.handle_key(&mut self, key_ev)?;
+                    }
+
+                    Event::Mouse(mouse_ev) => {
+                        self.view.handle_mouse(&mut self, mouse_ev)?;
+                    }
+
+                    Event::Paste(s) => {
+                        self.view.handle_paste(&mut self, s)?;
+                    }
+
+                    Event::Resize(_, _) => {},
                 }
             }
 
